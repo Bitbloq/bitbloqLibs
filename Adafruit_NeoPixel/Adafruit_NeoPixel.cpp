@@ -52,6 +52,12 @@ Adafruit_NeoPixel::Adafruit_NeoPixel(uint16_t n, uint8_t p, neoPixelType t) :
   setPin(p);
 }
 
+void Adafruit_NeoPixel::setRGBcolor(uint8_t r, uint8_t g, uint8_t b){
+  //setBrightness(100);
+  setPixelColor(0,Color(r,g,b));
+  show();
+}
+
 // via Michael Vogt/neophob: empty constructor is used when strand length
 // isn't known at compile-time; situations where program config might be
 // read from internal flash memory or an SD card, or arrive via serial
