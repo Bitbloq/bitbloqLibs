@@ -180,33 +180,35 @@ I2CColorSensor::Colors I2CColorSensor::whichColor(){
 	float	f_Green	= 0;
 	float	f_Blue	= 0;
 	float	f_Clear	= 0;
-	float 	f_RedAverage 	= 0;
-	float	f_GreenAverage	= 0;
-	float	f_BlueAverage	= 0;
-	float	f_ClearAverage	= 0;
+	float 	f_AverageColour = 0;	
+	int 	i_RedCount = 0;
+	int 	i_GreenCount = 0;
+	int	i_BlueCount = 0;
+	int	i_BlackCount = 0;
+	
+	i_RedCount = 0;
+	i_GreenCount = 0;
+	i_BlueCount = 0;
+	i_BlackCount = 0;
 
-	for(int i_Cont=0;i_Cont<30;i_Cont++){
+	for (int i_Cont = 0; i_Cont < 50; i_Cont++) {
 		getColor(&f_Red, &f_Green, &f_Blue, &f_Clear);
-		f_RedAverage+=f_Red;
-		f_GreenAverage+=f_Green;
-		f_BlueAverage+=f_Blue;
-		f_ClearAverage+=f_Clear;
+		f_Red = f_Red * 0.7;
+		f_Green = f_Green * 0.9;
+		f_AverageColour = (f_Red + f_Green + f_Blue) / 3;
+
+		if ((f_Red < 15) && (f_Green < 15) && (f_Blue < 15))	i_BlackCount++;
+		 else if ((f_Red > f_Green) && (f_Red > f_Blue) && ((f_Red - f_AverageColour) > (f_AverageColour * 0.2)))   i_RedCount++;
+		 else if ((f_Green > f_Red) && (f_Green > f_Blue) && ((f_Green - f_AverageColour) > (f_AverageColour * 0.2)))    i_GreenCount++;
+		 else if ((f_Blue - f_AverageColour) > (f_AverageColour * 0.2))     i_BlueCount++;
 	}
+	    
 
-  f_RedAverage		= f_RedAverage/30;
-  f_GreenAverage	= f_GreenAverage/30;
-  f_BlueAverage		= f_BlueAverage/30;
-  f_ClearAverage	= f_ClearAverage/30;
+	    if (i_BlackCount > 25) return I2CColorSensor::BLACK;
+	    if ((i_RedCount + i_GreenCount + i_BlueCount) < 25) return I2CColorSensor::WHITE;
+	    if ((i_GreenCount > i_RedCount) && (i_GreenCount > i_BlueCount)) return I2CColorSensor::GREEN;
+	    if ((i_BlueCount > i_RedCount) && (i_BlueCount > i_GreenCount)) return I2CColorSensor::BLUE;
+	    if ((i_RedCount > i_GreenCount) && (i_RedCount > i_BlueCount)) return I2CColorSensor::RED;
 
-  if ( (f_RedAverage > 170) && (f_GreenAverage > 170) && (f_BlueAverage > 170) ) return I2CColorSensor::WHITE;
-  if ( (f_RedAverage < 10) && (f_GreenAverage < 10) && (f_BlueAverage < 10) ) return I2CColorSensor::BLACK;
-  if ( f_RedAverage > (f_GreenAverage+f_BlueAverage)) return I2CColorSensor::RED;
-  if ( f_GreenAverage > (f_RedAverage + f_BlueAverage)*0.8) return I2CColorSensor::GREEN;
-  if ( f_BlueAverage > (f_GreenAverage + f_RedAverage)*0.8) return I2CColorSensor::BLUE;
-  if ( (f_RedAverage > 170) || (f_GreenAverage > 170) || (f_BlueAverage > 170) ) return I2CColorSensor::WHITE;
-  if ( (f_RedAverage < 50) || (f_GreenAverage < 50) || (f_BlueAverage < 50) ) return I2CColorSensor::BLACK;
-
-  return I2CColorSensor::WHITE;
 }
-
 }} //end namespace BQ::ZUM

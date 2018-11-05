@@ -145,6 +145,7 @@ float I2CALPSSensor::getAL(void)
 	readRegister(VCNL4200_REG_ALS_DATA, &ui8_dataL, &ui8_dataH);
 	ui16_ambient = (ui8_dataH << 8) + ui8_dataL;
 	f_ambient = ui16_ambient * VCNL4200_AL_LUXES;
+	f_ambient = (f_ambient * 0.002794 + 3.57) * sqrt(f_ambient) - f_ambient * 0.1378;
 	return f_ambient;
 }
 
