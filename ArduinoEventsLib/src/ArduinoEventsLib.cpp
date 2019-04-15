@@ -1,7 +1,9 @@
-#include <ArduinoEventsLib.h>
+//#define fakearduino
+
+#include "ArduinoEventsLib.h"
 #include <Arduino.h>
 
-CallbackItem::CallbackItem(functionPointer func, unsigned long t):
+ActionItem::ActionItem(functionPointer func, unsigned long t):
     timestamp{t},
     f{func},
     next{nullptr},
@@ -10,78 +12,77 @@ CallbackItem::CallbackItem(functionPointer func, unsigned long t):
 
 }
 
-CallbackItem::~CallbackItem(){
-}
-
 Heap::Heap():
-    first{ nullptr},
-    __delay{0}
+    first{nullptr},
+    last{nullptr},
+    size{0}
 {
 
 }
 
 Heap::~Heap(){
 
-    CallbackItem* it = first;
-
+    ActionItem* it = first;
     while(it!=nullptr){
-        CallbackItem* aux = it->next;
+        ActionItem* aux = it->next;
         delete it;
         it=aux;
     }
-
     first = nullptr;
+    last = nullptr;
 }
 
 
-void Heap::insert(functionPointer p){
-    if(first){
-        //if there are already elements in the heap
-        //save the address of the first
-        CallbackItem *aux = first;
-        //introduce the new one as first
-        CallbackItem* cb = new CallbackItem(p, millis() + __delay);
-        first = cb;
-        //set the previous first as second
-        first->next = aux;
-        first->next->prev = first;
+void Heap::insert(functionPointer p, int delay){
+    Serial.print("Insert with delay: ");
+    Serial.println(millis() + delay);
+    ActionItem* cb = new ActionItem(p, millis() + delay);
+    if(last){
+        //introduce the new one after last
+        last->next = cb;
+        cb->prev = last;
+        last = cb;
     }else{
         //it is the first one
-        CallbackItem* cb = new CallbackItem(p, millis() + __delay);
         first = cb;
+        last = cb;
     }
-    __delay=0;
+
+    size++;
+    Serial.print("Insert - size: "); Serial.println(size);
 }
 
-void Heap::remove(CallbackItem *cb){
+void Heap::remove(ActionItem *cb){
+    Serial.print("Trying to remove - size: "); Serial.println(size);
     //If cb is the first iteam in the heap
     if(cb == first){
-        if(cb->next){
+        // the only  one
+        if(cb == last){
+            first = nullptr;
+            last = nullptr;
+        }else{
             //if cb is NOT de last item in the heap
             first = cb->next;
-        }else{
-            //cb is the only element in the heap
-            first = nullptr;
+            first->prev = nullptr;
         }
+    }else if (cb == last){
+        last = cb->prev;
+        last->next = nullptr;
     }else{
-        //if cb is NOT de last item in the heap
-        if (cb->next){
-            cb->prev->next = cb->next;
-            cb->next->prev = cb->prev;
-        }else{
-            //if cb is the last item in the heap
-            cb->prev->next = nullptr;
-        }
+        //if cb is NOT the first, nor the last item in the heap
+        cb->prev->next = cb->next;
+        cb->next->prev = cb->prev;
     }
-
+    size--;
     delete cb;
+    Serial.print("Removed - size: "); Serial.println(size);
 
 }
 
 void Heap::eventloop(){
-    CallbackItem* it = first;
+    ActionItem* it = first;
     while(it!=nullptr){
-        CallbackItem* aux = it;
+        ActionItem* aux = it;
         it = it->next;
         if(aux->timestamp < millis()){
             aux->f();
@@ -89,8 +90,3 @@ void Heap::eventloop(){
         }
     }
 }
-
-void Heap::delay(unsigned long int delay){
-    __delay = delay;
-}
-

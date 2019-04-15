@@ -1,19 +1,19 @@
-#ifndef EVENTHEAP_H
-#define EVENTHEAP_H
+//#define fakearduino
+
+#ifndef ARDUINOEVENTSLIB_H
+#define ARDUINOEVENTSLIB_H
+
 
 typedef void (*functionPointer)(void);
 
-class CallbackItem
+class ActionItem
 {
 public:
-    CallbackItem(functionPointer func, unsigned long t);
-    ~CallbackItem();
-
+    ActionItem(functionPointer func, unsigned long t);
     unsigned long timestamp;
     functionPointer f;
-    CallbackItem* next;
-    CallbackItem* prev;
-
+    ActionItem* next;
+    ActionItem* prev;
 };
 
 class Heap
@@ -21,14 +21,12 @@ class Heap
 public:
     Heap();
     ~Heap();
-    CallbackItem* first;
-    void insert(functionPointer);
-    void remove(CallbackItem *);
+    ActionItem* first;
+    ActionItem* last;
+    void insert(functionPointer, int delay = 0);
+    void remove(ActionItem *);
     void eventloop();
-    void delay(unsigned long int delay);
-
-private:
-    unsigned long int __delay;
+    int size;
 };
 
-#endif // EVENTHEAP_H
+#endif // ARDUINOEVENTSLIB_H
