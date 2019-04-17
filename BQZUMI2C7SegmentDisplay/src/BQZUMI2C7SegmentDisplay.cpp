@@ -35,7 +35,8 @@
 namespace BQ{ namespace ZUM{
 
 // Instantiate I2C7SegmentDisplay class
-I2C7SegmentDisplay::I2C7SegmentDisplay(uint8_t ui8_port):segmentdisplay_i2cport(ui8_port)
+I2C7SegmentDisplay::I2C7SegmentDisplay(uint8_t ui8_port):segmentdisplay_i2cport(ui8_port),
+numValue{100},strValue{""}
 {
 }
 
@@ -90,6 +91,10 @@ void I2C7SegmentDisplay::display(uint8_t i_disp1, uint8_t i_disp0)
 
 void I2C7SegmentDisplay::displayChar(char c_disp1, char c_disp0)
 {
+	strValue = "";
+	strValue.concat(c_disp1);
+	strValue.concat(c_disp0);
+
 	displayChar1(c_disp1);
 	displayChar0(c_disp0);			
 }
@@ -100,10 +105,12 @@ void I2C7SegmentDisplay::displayString(String s){
 	}else{
 		displayChar(s[0],s[1]);
 	}
+	strValue = s;
 }
 
 void I2C7SegmentDisplay::displayInt(int num){
 	displayString(String(num));
+	numValue = num;
 }
 
 void I2C7SegmentDisplay::displayPos0(uint8_t i_disp0){
