@@ -99,10 +99,10 @@ protected:
 
 	const uint8_t rgbColors[7][3];
 	const int tones[7];
-    const uint8_t buzzerPin; /// pin where the buzzer is connected. It is hardwired on the board (D8) 
-    const uint8_t rPin; /// green led pin (7)
+    const uint8_t buzzerPin; /// pin where the buzzer is connected. It is hardwired on the board (D4) 
+    const uint8_t rPin; /// red led pin (7)
     const uint8_t gPin; /// green led pin (8)
-    const uint8_t bPin; /// green led pin (2)
+    const uint8_t bPin; /// blue led pin (2)
 };
 
 } //end namespace
