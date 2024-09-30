@@ -1,0 +1,6 @@
+[submodule "FastLED"]
+	path = FastLED
+	url = https://github.com/Bitbloq/FastLED
+[submodule "Adafruit-GFX-Library"]
+	path = Adafruit-GFX-Library
+	url = https://github.com/Bitbloq/Adafruit-GFX-Library
